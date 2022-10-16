@@ -33,8 +33,6 @@ public class CartService {
         return cartRepository.findAllByUserId(userId);
     }
 
-
-
     public Optional<Cart> find(User user, Product product) {
         return cartRepository.findByUserAndProduct(user, product);
     }
@@ -42,7 +40,6 @@ public class CartService {
     public Cart insert(String userId, CartDto cartDto) {
         User user = userService.find(userId).orElseThrow(() -> new NotFoundException("Invalid user"));
         Product product = productService.find(cartDto.getSku()).orElseThrow(() -> new NotFoundException(("Invalid product")));
-//        this.find(user, product).ifPresent(cart -> { throw new AlreadyExistException("Product already exist"); });
         CounterResult myID = cartRepository.getOperations().getCouchbaseClientFactory().getCollection("cart").binary().increment("NextSequence", IncrementOptions.incrementOptions().initial(1));
         String seqId="cart::"+String.valueOf(myID.content());
         return cartRepository.save(new Cart(seqId,user, product, cartDto.getQuantity(), cartDto.getQuantity() * product.getPrice()));
